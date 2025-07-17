@@ -4,15 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Puan Toplama Uygulaması</title>
-    <script src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-app-pub-4304063700132168~6627460785" crossorigin="anonymous"></script>
+    <script src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4304063700132168" crossorigin="anonymous"></script>
     <style>
         :root {
-            --primary-color: #B6B6A6;
+            --primary-color: #4a6fa5;
             --dark-bg: #1a1a2e;
             --card-bg: #2a2a4a;
             --text-light: #e6e6e6;
             --text-muted: #aaa;
-            --border-color: #33335a;
+            --border-color: #3a3a5a;
             --success-color: #4CAF50;
             --info-color: #2196F3;
             --danger-color: #f44336;
@@ -83,6 +83,7 @@
             z-index: 999;
             display: none;
             width: 250px;
+            border: 1px solid var(--border-color);
         }
         
         .menu.active {
@@ -132,9 +133,9 @@
         .form-control {
             width: 100%;
             padding: 12px;
-            border: 1px solid #444;
+            border: 1px solid var(--border-color);
             border-radius: 5px;
-            background-color: #2d2d4d;
+            background-color: rgba(255,255,255,0.05);
             color: white;
             font-size: 16px;
         }
@@ -194,6 +195,7 @@
             align-items: center;
             justify-content: center;
             font-weight: bold;
+            color: white;
         }
         
         .badge {
@@ -222,7 +224,7 @@
             width: 150px;
             height: 150px;
             background-color: var(--primary-color);
-            border-radius: 50%; /* Yuvarlak buton */
+            border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -232,6 +234,7 @@
             cursor: pointer;
             transition: transform 0.1s;
             box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            color: white;
         }
         
         .click-button:active {
@@ -256,6 +259,7 @@
             font-size: 36px;
             font-weight: bold;
             margin-right: 20px;
+            color: white;
         }
         
         .detail-row {
@@ -388,6 +392,7 @@
         <a href="#" class="menu-item" data-page="gamePage">Oyun</a>
         <a href="#" class="menu-item" data-page="profilePage">Profilim</a>
         <a href="#" class="menu-item" data-page="infoPage">Nasıl Puan Kazanılır?</a>
+        <a href="#" class="menu-item" data-page="referralsPage">Referanslarım</a>
         <a href="#" class="menu-item" data-page="adminPage" id="adminMenuBtn" style="display:none;">Admin Paneli</a>
         <a href="#" class="menu-item" id="logoutMenuBtn">Çıkış Yap</a>
     </div>
@@ -468,7 +473,7 @@
                 <div class="ad-container" id="topBannerAd">
                     <ins class="adsbygoogle"
                          style="display:block"
-                         data-ad-client="ca-app-pub-4304063700132168"
+                         data-ad-client="ca-pub-4304063700132168"
                          data-ad-slot="1234567890"
                          data-ad-format="auto"
                          data-full-width-responsive="true"></ins>
@@ -486,7 +491,7 @@
                 <div class="ad-container" id="bottomBannerAd">
                     <ins class="adsbygoogle"
                          style="display:block"
-                         data-ad-client="ca-app-pub-4304063700132168"
+                         data-ad-client="ca-pub-4304063700132168"
                          data-ad-slot="0987654321"
                          data-ad-format="auto"
                          data-full-width-responsive="true"></ins>
@@ -524,10 +529,6 @@
                         <span class="detail-value" id="profileRefCode">ABCD1234</span>
                     </div>
                     <div class="detail-row">
-                        <span class="detail-label">Davet Edilenler:</span>
-                        <span class="detail-value" id="profileInvites">0 kişi</span>
-                    </div>
-                    <div class="detail-row">
                         <span class="detail-label">Kullanıcı Statüsü:</span>
                         <span class="detail-value">
                             <span class="status-badge" id="userStatusBadge">Kullanıcı</span>
@@ -536,7 +537,6 @@
                 </div>
                 
                 <button class="btn" style="margin-top:15px;" id="editProfileBtn">Profili Düzenle</button>
-                <button class="btn" style="margin-top:10px;background-color:#444;" id="shareRefBtn">Referans Kodunu Paylaş</button>
             </div>
         </div>
     </div>
@@ -559,10 +559,17 @@
                     <span class="detail-value">+100 Puan</span>
                 </div>
             </div>
-            
-            <div class="card" style="margin-top:20px;">
-                <h3 class="card-title">Referans Sistemi</h3>
-                <p class="text-muted">Arkadaşlarınızı referans kodunuzla davet ederek ekstra puan kazanabilirsiniz. Her davet ettiğiniz kullanıcı için 100 puan alırsınız.</p>
+        </div>
+    </div>
+    
+    <!-- Referanslarım sayfası -->
+    <div id="referralsPage" class="page">
+        <div class="container">
+            <div class="card">
+                <h3 class="card-title">Referanslarım</h3>
+                <div id="referralsList">
+                    <!-- Referans listesi buraya eklenecek -->
+                </div>
             </div>
         </div>
     </div>
@@ -606,26 +613,6 @@
         </div>
     </div>
     
-    <!-- Referans paylaşım modalı -->
-    <div id="shareRefModal" class="modal">
-        <div class="modal-content">
-            <h2 class="modal-title">Referans Kodunu Paylaş</h2>
-            <div class="form-group">
-                <label>Referans Kodunuz:</label>
-                <input type="text" id="refCodeToShare" class="form-control" readonly style="background-color:#3a3a5a;">
-            </div>
-            <div class="form-group">
-                <label>Davet Bağlantısı:</label>
-                <input type="text" id="refLink" class="form-control" readonly style="background-color:#3a3a5a;">
-            </div>
-            <p class="text-muted">Bu kodu paylaşarak arkadaşlarını davet edebilir ve her davet için <strong>100 puan</strong> kazanabilirsin!</p>
-            <div class="btn-group">
-                <button class="btn" id="copyRefBtn">Kopyala</button>
-                <button type="button" class="btn" style="background-color:#444;" id="closeShareModalBtn">Kapat</button>
-            </div>
-        </div>
-    </div>
-    
     <!-- Puan düzenleme modalı -->
     <div id="editPointsModal" class="modal">
         <div class="modal-content">
@@ -661,7 +648,7 @@
         let bannerRefreshInterval;
 
         // Admin kullanıcıları
-        const adminUsers = ["B6B6A6", "admin"];
+        const adminUsers = ["B6B6A6"];
 
         // Sayfa elementleri
         const loginPage = document.getElementById('loginPage');
@@ -669,6 +656,7 @@
         const gamePage = document.getElementById('gamePage');
         const profilePage = document.getElementById('profilePage');
         const infoPage = document.getElementById('infoPage');
+        const referralsPage = document.getElementById('referralsPage');
         const adminPage = document.getElementById('adminPage');
         const showRegister = document.getElementById('showRegister');
         const showLogin = document.getElementById('showLogin');
@@ -680,15 +668,9 @@
         const usernameDisplay = document.getElementById('usernameDisplay');
         const userAvatar = document.getElementById('userAvatar');
         const editProfileBtn = document.getElementById('editProfileBtn');
-        const shareRefBtn = document.getElementById('shareRefBtn');
         const editProfileModal = document.getElementById('editProfileModal');
-        const shareRefModal = document.getElementById('shareRefModal');
         const cancelEditBtn = document.getElementById('cancelEditBtn');
-        const closeShareModalBtn = document.getElementById('closeShareModalBtn');
         const editProfileForm = document.getElementById('editProfileForm');
-        const copyRefBtn = document.getElementById('copyRefBtn');
-        const refCodeToShare = document.getElementById('refCodeToShare');
-        const refLink = document.getElementById('refLink');
         const menuBtn = document.getElementById('menuBtn');
         const mainMenu = document.getElementById('mainMenu');
         const adminMenuBtn = document.getElementById('adminMenuBtn');
@@ -706,6 +688,7 @@
         const videoAdModal = document.getElementById('videoAdModal');
         const videoAdContainer = document.getElementById('videoAdContainer');
         const closeVideoAdBtn = document.getElementById('closeVideoAdBtn');
+        const referralsList = document.getElementById('referralsList');
 
         // AdMob reklamlarını yükle
         function loadAds() {
@@ -748,6 +731,11 @@
             if (pageId === 'adminPage') {
                 updateUserList();
             }
+            
+            // Referans sayfasına gidiliyorsa referans listesini yenile
+            if (pageId === 'referralsPage') {
+                updateReferralsList();
+            }
         }
 
         // Rastgele referans kodu üretici
@@ -776,6 +764,31 @@
             } else {
                 userStatusBadge.classList.add('status-user');
             }
+        }
+
+        // Referans listesini güncelle
+        function updateReferralsList() {
+            if (!currentUser) return;
+            
+            referralsList.innerHTML = '';
+            
+            // Bu kullanıcının referans koduyla kayıt olanları bul
+            const referrals = users.filter(user => user.refCode === currentUser.ownRefCode);
+            
+            if (referrals.length === 0) {
+                referralsList.innerHTML = '<p>Henüz referansınızla kayıt olan kullanıcı yok.</p>';
+                return;
+            }
+            
+            referrals.forEach(user => {
+                const referralItem = document.createElement('div');
+                referralItem.className = 'detail-row';
+                referralItem.innerHTML = `
+                    <span class="detail-label">${user.username}</span>
+                    <span class="detail-value">+100 Puan</span>
+                `;
+                referralsList.appendChild(referralItem);
+            });
         }
 
         // Menü tıklama
@@ -834,7 +847,7 @@
                 menuBtn.style.display = 'flex';
                 
                 // Admin menüsünü göster/gizle
-                if (adminUsers.includes(currentUser.username)) {
+                if (adminUsers.includes(currentUser.username) || currentUser.status === 'moderator') {
                     adminMenuBtn.style.display = 'block';
                 } else {
                     adminMenuBtn.style.display = 'none';
@@ -968,15 +981,10 @@
             document.getElementById('profilePoints').textContent = currentUser.points || 0;
             document.getElementById('profileRegisterDate').textContent = currentUser.registerDate;
             document.getElementById('profileRefCode').textContent = currentUser.ownRefCode;
-            document.getElementById('profileInvites').textContent = currentUser.invitedUsers + ' kişi';
             document.getElementById('profileAvatar').textContent = currentUser.username.charAt(0).toUpperCase();
             
             // Modal içindeki formu doldur
             document.getElementById('editEmail').value = currentUser.email;
-            
-            // Referans paylaşım bilgilerini güncelle
-            refCodeToShare.value = currentUser.ownRefCode;
-            refLink.value = window.location.href.split('?')[0] + '?ref=' + currentUser.ownRefCode;
         }
 
         // Profil düzenleme
@@ -1010,25 +1018,9 @@
             editProfileModal.style.display = 'none';
         });
 
-        // Referans paylaşım
-        shareRefBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            shareRefModal.style.display = 'flex';
-        });
-
-        closeShareModalBtn.addEventListener('click', () => {
-            shareRefModal.style.display = 'none';
-        });
-
-        copyRefBtn.addEventListener('click', () => {
-            refLink.select();
-            document.execCommand('copy');
-            alert('Bağlantı kopyalandı!');
-        });
-
         // Kullanıcı listesini güncelle
         function updateUserList() {
-            if (!adminUsers.includes(currentUser.username)) return;
+            if (!adminUsers.includes(currentUser.username) && currentUser.status !== 'moderator') return;
             
             userList.innerHTML = '';
             
@@ -1168,7 +1160,7 @@
             // Menü butonunu gizle (başlangıçta)
             menuBtn.style.display = 'none';
             
-            // Örnek admin kullanıcıları ekle
+            // Örnek admin kullanıcısı ekle
             if (users.length === 0) {
                 users.push({
                     username: 'B6B6A6',
