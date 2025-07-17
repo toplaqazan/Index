@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Puan Toplama Uygulaması</title>
+    <script src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-app-pub-4304063700132168~6627460785" crossorigin="anonymous"></script>
+    <style>
+        :root {
+            --primary-color: #B6B6A6;
+            --dark-bg: #1a1a2e;
+            --card-bg: #2a2a4a;
+            --text-light: #e6e6e6;
+            --text-muted: #aaa;
+            --border-color: #33335a;
+            --success-color: #4CAF50;
+            --info-color: #2196F3;
+            --danger-color: #f44336;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Sayfa geçiş sistemi */
+        .page {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        /* Menü stilleri */
+        .menu-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .menu {
+            position: fixed;
+            top: 80px;
+            left: 20px;
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            z-index: 999;
+            display: none;
+            width: 250px;
+        }
+        
+        .menu.active {
+            display: block;
+        }
+        
+        .menu-item {
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 10px 15px;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+        
+        .menu-item:hover {
+            background-color: var(--primary-color);
+        }
+        
+        /* Kart stilleri */
+        .card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 25px;
+            margin-top: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            border: 1px solid var(--border-color);
+        }
+        
+        .card-title {
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+            font-size: 24px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #444;
+            border-radius: 5px;
+            background-color: #2d2d4d;
+            color: white;
+            font-size: 16px;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .btn:hover {
+            opacity: 0.9;
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+        
+        .text-muted {
+            color: var(--text-muted);
+        }
+        
+        .link {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        /* Oyun sayfası stilleri */
+        .header-bar {
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .avatar {
+            width: 40px;
+            height: 40px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            margin-right: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .badge {
+            background-color: var(--primary-color);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+        
+        .click-area {
+            background: var(--card-bg);
+            min-height: 350px;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+            cursor: pointer;
+            user-select: none;
+            border: 1px solid var(--border-color);
+            padding: 20px 0;
+        }
+        
+        .click-button {
+            width: 150px;
+            height: 150px;
+            background-color: var(--primary-color);
+            border-radius: 50%; /* Yuvarlak buton */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin: 15px 0;
+            cursor: pointer;
+            transition: transform 0.1s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .click-button:active {
+            transform: scale(0.95);
+        }
+        
+        /* Profil sayfası stilleri */
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            font-weight: bold;
+            margin-right: 20px;
+        }
+        
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+        
+        .detail-label {
+            color: var(--text-muted);
+        }
+        
+        .detail-value {
+            font-weight: bold;
+        }
+        
+        /* Badge stilleri */
+        .status-badge {
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .status-user {
+            background-color: var(--success-color);
+        }
+        
+        .status-moderator {
+            background-color: var(--info-color);
+        }
+        
+        .status-admin {
+            background-color: var(--danger-color);
+        }
+        
+        /* Modal stilleri */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+        }
+        
+        .modal-title {
+            margin-bottom: 20px;
+            text-align: center;
+            color: var(--primary-color);
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        /* AdMob banner stilleri */
+        .ad-container {
+            width: 100%;
+            margin: 10px 0;
+            text-align: center;
+            min-height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(255,255,255,0.1);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        /* Video reklam modalı */
+        #videoAdModal {
+            background-color: rgba(0,0,0,0.9);
+        }
+        
+        #videoAdContainer {
+            width: 100%;
+            max-width: 400px;
+            height: 300px;
+            background-color: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+        
+        /* Responsive ayarlar */
+        @media (max-width: 400px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .card {
+                padding: 15px;
+            }
+            
+            .click-button {
+                width: 120px;
+                height: 120px;
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Menü butonu -->
+    <button class="menu-btn" id="menuBtn">☰</button>
+    
+    <!-- Açılır menü -->
+    <div class="menu" id="mainMenu">
+        <a href="#" class="menu-item" data-page="gamePage">Oyun</a>
+        <a href="#" class="menu-item" data-page="profilePage">Profilim</a>
+        <a href="#" class="menu-item" data-page="infoPage">Nasıl Puan Kazanılır?</a>
+        <a href="#" class="menu-item" data-page="adminPage" id="adminMenuBtn" style="display:none;">Admin Paneli</a>
+        <a href="#" class="menu-item" id="logoutMenuBtn">Çıkış Yap</a>
+    </div>
+
+    <!-- Giriş sayfası -->
+    <div id="loginPage" class="page active">
+        <div class="container">
+            <div class="card">
+                <h2 class="card-title">GİRİŞ YAP</h2>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="loginUsername">Kullanıcı Adı</label>
+                        <input type="text" id="loginUsername" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Şifre</label>
+                        <input type="password" id="loginPassword" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn">Giriş Yap</button>
+                </form>
+                <div class="text-center" style="margin-top:15px;">
+                    <p class="text-muted">Hesabın yok mu? <a href="#" id="showRegister" class="link">Kayıt Ol</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Kayıt sayfası -->
+    <div id="registerPage" class="page">
+        <div class="container">
+            <div class="card">
+                <h2 class="card-title">KAYIT OL</h2>
+                <form id="registerForm">
+                    <div class="form-group">
+                        <label for="regEmail">E-posta</label>
+                        <input type="email" id="regEmail" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="regUsername">Kullanıcı Adı</label>
+                        <input type="text" id="regUsername" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="regPassword">Şifre</label>
+                        <input type="password" id="regPassword" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="regPasswordConfirm">Şifre Tekrar</label>
+                        <input type="password" id="regPasswordConfirm" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="refCode">Referans Kodu (Varsa)</label>
+                        <input type="text" id="refCode" class="form-control" placeholder="Davet eden arkadaşının kodu">
+                    </div>
+                    <button type="submit" class="btn">Kayıt Ol</button>
+                </form>
+                <div class="text-center" style="margin-top:15px;">
+                    <p class="text-muted">Zaten hesabın var mı? <a href="#" id="showLogin" class="link">Giriş Yap</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Oyun sayfası -->
+    <div id="gamePage" class="page">
+        <div class="container">
+            <div class="header-bar">
+                <div class="user-info">
+                    <div class="avatar" id="userAvatar">U</div>
+                    <span id="usernameDisplay">Kullanıcı</span>
+                </div>
+                <div class="badge">
+                    Puan: <span id="pointsDisplay">0</span>
+                </div>
+            </div>
+            
+            <div class="click-area">
+                <!-- Üst AdMob banner -->
+                <div class="ad-container" id="topBannerAd">
+                    <ins class="adsbygoogle"
+                         style="display:block"
+                         data-ad-client="ca-app-pub-4304063700132168"
+                         data-ad-slot="1234567890"
+                         data-ad-format="auto"
+                         data-full-width-responsive="true"></ins>
+                    <script>
+                         (adsbygoogle = window.adsbygoogle || []).push({});
+                    </script>
+                </div>
+                
+                <!-- Yuvarlak tıkla butonu -->
+                <div class="click-button" id="clickButton">
+                    TIKLA
+                </div>
+                
+                <!-- Alt AdMob banner -->
+                <div class="ad-container" id="bottomBannerAd">
+                    <ins class="adsbygoogle"
+                         style="display:block"
+                         data-ad-client="ca-app-pub-4304063700132168"
+                         data-ad-slot="0987654321"
+                         data-ad-format="auto"
+                         data-full-width-responsive="true"></ins>
+                    <script>
+                         (adsbygoogle = window.adsbygoogle || []).push({});
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Profil sayfası -->
+    <div id="profilePage" class="page">
+        <div class="container">
+            <div class="card">
+                <div class="profile-header">
+                    <div class="profile-avatar" id="profileAvatar">U</div>
+                    <div class="profile-info">
+                        <h3 id="profileUsername">Kullanıcı</h3>
+                        <p id="profileEmail" class="text-muted">email@example.com</p>
+                    </div>
+                </div>
+                
+                <div class="profile-details">
+                    <div class="detail-row">
+                        <span class="detail-label">Toplam Puan:</span>
+                        <span class="detail-value" id="profilePoints">0</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Kayıt Tarihi:</span>
+                        <span class="detail-value" id="profileRegisterDate">01.01.2023</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Referans Kodun:</span>
+                        <span class="detail-value" id="profileRefCode">ABCD1234</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Davet Edilenler:</span>
+                        <span class="detail-value" id="profileInvites">0 kişi</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Kullanıcı Statüsü:</span>
+                        <span class="detail-value">
+                            <span class="status-badge" id="userStatusBadge">Kullanıcı</span>
+                        </span>
+                    </div>
+                </div>
+                
+                <button class="btn" style="margin-top:15px;" id="editProfileBtn">Profili Düzenle</button>
+                <button class="btn" style="margin-top:10px;background-color:#444;" id="shareRefBtn">Referans Kodunu Paylaş</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bilgi sayfası -->
+    <div id="infoPage" class="page">
+        <div class="container">
+            <div class="card">
+                <h3 class="card-title">Nasıl Puan Kazanılır?</h3>
+                <div class="detail-row">
+                    <span class="detail-label">Tıklama Başına:</span>
+                    <span class="detail-value">+1 Puan</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Referansla Kayıt:</span>
+                    <span class="detail-value">+50 Puan</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Davet Başına:</span>
+                    <span class="detail-value">+100 Puan</span>
+                </div>
+            </div>
+            
+            <div class="card" style="margin-top:20px;">
+                <h3 class="card-title">Referans Sistemi</h3>
+                <p class="text-muted">Arkadaşlarınızı referans kodunuzla davet ederek ekstra puan kazanabilirsiniz. Her davet ettiğiniz kullanıcı için 100 puan alırsınız.</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Admin paneli -->
+    <div id="adminPage" class="page">
+        <div class="container">
+            <div class="card">
+                <h3 class="card-title">Admin Paneli</h3>
+                
+                <div class="form-group">
+                    <label for="adminSearch">Kullanıcı Ara</label>
+                    <input type="text" id="adminSearch" class="form-control" placeholder="Kullanıcı adı veya e-posta">
+                </div>
+                
+                <div class="user-list" id="userList">
+                    <!-- Kullanıcı listesi buraya eklenecek -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Profil düzenleme modalı -->
+    <div id="editProfileModal" class="modal">
+        <div class="modal-content">
+            <h2 class="modal-title">Profili Düzenle</h2>
+            <form id="editProfileForm">
+                <div class="form-group">
+                    <label for="editEmail">E-posta</label>
+                    <input type="email" id="editEmail" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="editPassword">Yeni Şifre (Değiştirmek istemiyorsanız boş bırakın)</label>
+                    <input type="password" id="editPassword" class="form-control">
+                </div>
+                <div class="btn-group">
+                    <button type="submit" class="btn">Kaydet</button>
+                    <button type="button" class="btn" style="background-color:#444;" id="cancelEditBtn">İptal</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Referans paylaşım modalı -->
+    <div id="shareRefModal" class="modal">
+        <div class="modal-content">
+            <h2 class="modal-title">Referans Kodunu Paylaş</h2>
+            <div class="form-group">
+                <label>Referans Kodunuz:</label>
+                <input type="text" id="refCodeToShare" class="form-control" readonly style="background-color:#3a3a5a;">
+            </div>
+            <div class="form-group">
+                <label>Davet Bağlantısı:</label>
+                <input type="text" id="refLink" class="form-control" readonly style="background-color:#3a3a5a;">
+            </div>
+            <p class="text-muted">Bu kodu paylaşarak arkadaşlarını davet edebilir ve her davet için <strong>100 puan</strong> kazanabilirsin!</p>
+            <div class="btn-group">
+                <button class="btn" id="copyRefBtn">Kopyala</button>
+                <button type="button" class="btn" style="background-color:#444;" id="closeShareModalBtn">Kapat</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Puan düzenleme modalı -->
+    <div id="editPointsModal" class="modal">
+        <div class="modal-content">
+            <h2 class="modal-title" id="editPointsTitle">Puan Düzenle</h2>
+            <div class="form-group">
+                <label for="pointsAmount">Puan Miktarı</label>
+                <input type="number" id="pointsAmount" class="form-control" placeholder="Puan miktarını girin">
+            </div>
+            <div class="btn-group">
+                <button class="btn" id="addPointsBtn">Puan Ekle</button>
+                <button class="btn" style="background-color:#444;" id="removePointsBtn">Puan Çıkar</button>
+                <button type="button" class="btn" style="background-color:#444;" id="cancelPointsBtn">İptal</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Video reklam modalı -->
+    <div id="videoAdModal" class="modal">
+        <div class="modal-content" style="background-color:transparent;max-width:100%;">
+            <div id="videoAdContainer">
+                <h3 style="color:white;">Video Reklam Yükleniyor...</h3>
+            </div>
+            <button type="button" class="btn" style="margin-top:20px;background-color:#444;" id="closeVideoAdBtn">Reklamı Kapat</button>
+        </div>
+    </div>
+
+    <script>
+        // Kullanıcı verileri
+        let users = JSON.parse(localStorage.getItem('users')) || [];
+        let currentUser = null;
+        let selectedUserForEdit = null;
+        let clickCount = 0;
+        let bannerRefreshInterval;
+
+        // Admin kullanıcıları
+        const adminUsers = ["B6B6A6", "admin"];
+
+        // Sayfa elementleri
+        const loginPage = document.getElementById('loginPage');
+        const registerPage = document.getElementById('registerPage');
+        const gamePage = document.getElementById('gamePage');
+        const profilePage = document.getElementById('profilePage');
+        const infoPage = document.getElementById('infoPage');
+        const adminPage = document.getElementById('adminPage');
+        const showRegister = document.getElementById('showRegister');
+        const showLogin = document.getElementById('showLogin');
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        const logoutBtn = document.getElementById('logoutMenuBtn');
+        const clickButton = document.getElementById('clickButton');
+        const pointsDisplay = document.getElementById('pointsDisplay');
+        const usernameDisplay = document.getElementById('usernameDisplay');
+        const userAvatar = document.getElementById('userAvatar');
+        const editProfileBtn = document.getElementById('editProfileBtn');
+        const shareRefBtn = document.getElementById('shareRefBtn');
+        const editProfileModal = document.getElementById('editProfileModal');
+        const shareRefModal = document.getElementById('shareRefModal');
+        const cancelEditBtn = document.getElementById('cancelEditBtn');
+        const closeShareModalBtn = document.getElementById('closeShareModalBtn');
+        const editProfileForm = document.getElementById('editProfileForm');
+        const copyRefBtn = document.getElementById('copyRefBtn');
+        const refCodeToShare = document.getElementById('refCodeToShare');
+        const refLink = document.getElementById('refLink');
+        const menuBtn = document.getElementById('menuBtn');
+        const mainMenu = document.getElementById('mainMenu');
+        const adminMenuBtn = document.getElementById('adminMenuBtn');
+        const userList = document.getElementById('userList');
+        const adminSearch = document.getElementById('adminSearch');
+        const editPointsModal = document.getElementById('editPointsModal');
+        const pointsAmount = document.getElementById('pointsAmount');
+        const addPointsBtn = document.getElementById('addPointsBtn');
+        const removePointsBtn = document.getElementById('removePointsBtn');
+        const cancelPointsBtn = document.getElementById('cancelPointsBtn');
+        const editPointsTitle = document.getElementById('editPointsTitle');
+        const userStatusBadge = document.getElementById('userStatusBadge');
+        const topBannerAd = document.getElementById('topBannerAd');
+        const bottomBannerAd = document.getElementById('bottomBannerAd');
+        const videoAdModal = document.getElementById('videoAdModal');
+        const videoAdContainer = document.getElementById('videoAdContainer');
+        const closeVideoAdBtn = document.getElementById('closeVideoAdBtn');
+
+        // AdMob reklamlarını yükle
+        function loadAds() {
+            // Banner reklamlarını yenileme
+            bannerRefreshInterval = setInterval(() => {
+                (adsbygoogle = window.adsbygoogle || []).push({});
+            }, 60000); // 60 saniyede bir
+        }
+
+        // Video reklam göster
+        function showVideoAd() {
+            videoAdModal.style.display = 'flex';
+            
+            // Gerçek uygulamada burada AdMob video reklamı yüklenir
+            videoAdContainer.innerHTML = `
+                <div style="width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;">
+                    <h3 style="color:white;text-align:center;">Video Reklam Gösteriliyor</h3>
+                    <p style="color:#aaa;margin-top:10px;">5 saniye sonra otomatik kapanacak</p>
+                </div>
+            `;
+            
+            // 5 saniye sonra otomatik kapat (gerçekte reklam bitince kapanır)
+            setTimeout(() => {
+                videoAdModal.style.display = 'none';
+                videoAdContainer.innerHTML = '';
+            }, 5000);
+        }
+
+        // Sayfa geçiş fonksiyonu
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(pageId).classList.add('active');
+            
+            // Menüyü kapat
+            mainMenu.classList.remove('active');
+            
+            // Admin sayfasına gidiliyorsa kullanıcı listesini yenile
+            if (pageId === 'adminPage') {
+                updateUserList();
+            }
+        }
+
+        // Rastgele referans kodu üretici
+        function generateRefCode() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let result = '';
+            for (let i = 0; i < 8; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
+        }
+
+        // Kullanıcı statüsünü göster
+        function updateUserStatusBadge() {
+            if (!currentUser) return;
+            
+            userStatusBadge.className = 'status-badge';
+            userStatusBadge.textContent = 'Kullanıcı';
+            
+            if (currentUser.status === 'moderator') {
+                userStatusBadge.classList.add('status-moderator');
+                userStatusBadge.textContent = 'Moderatör';
+            } else if (adminUsers.includes(currentUser.username)) {
+                userStatusBadge.classList.add('status-admin');
+                userStatusBadge.textContent = 'Admin';
+            } else {
+                userStatusBadge.classList.add('status-user');
+            }
+        }
+
+        // Menü tıklama
+        menuBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            mainMenu.classList.toggle('active');
+        });
+
+        // Menü dışına tıklanınca kapat
+        document.addEventListener('click', () => {
+            mainMenu.classList.remove('active');
+        });
+
+        // Menü elementlerine tıklanınca kapatma
+        mainMenu.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+
+        // Olay izleyiciler
+        showRegister.addEventListener('click', (e) => {
+            e.preventDefault();
+            showPage('registerPage');
+        });
+
+        showLogin.addEventListener('click', (e) => {
+            e.preventDefault();
+            showPage('loginPage');
+        });
+
+        // Menüden sayfa geçişleri
+        document.querySelectorAll('.menu-item[data-page]').forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                const pageId = this.getAttribute('data-page');
+                showPage(pageId);
+            });
+        });
+
+        // Giriş işlemi
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            const user = users.find(u => u.username === username && u.password === password);
+            
+            if (user) {
+                currentUser = user;
+                
+                // Kullanıcı bilgilerini güncelle
+                usernameDisplay.textContent = currentUser.username;
+                userAvatar.textContent = currentUser.username.charAt(0).toUpperCase();
+                pointsDisplay.textContent = currentUser.points || 0;
+                
+                // Menü butonunu göster
+                menuBtn.style.display = 'flex';
+                
+                // Admin menüsünü göster/gizle
+                if (adminUsers.includes(currentUser.username)) {
+                    adminMenuBtn.style.display = 'block';
+                } else {
+                    adminMenuBtn.style.display = 'none';
+                }
+                
+                // Oyun sayfasına geç
+                showPage('gamePage');
+                loadProfile();
+                updateUserStatusBadge();
+                
+                // Formu temizle
+                loginForm.reset();
+                
+                // Reklamları yükle
+                loadAds();
+            } else {
+                alert('Kullanıcı adı veya şifre hatalı!');
+            }
+        });
+
+        // Kayıt işlemi
+        registerForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('regEmail').value;
+            const username = document.getElementById('regUsername').value;
+            const password = document.getElementById('regPassword').value;
+            const passwordConfirm = document.getElementById('regPasswordConfirm').value;
+            const refCode = document.getElementById('refCode').value;
+            
+            // Şifre kontrolü
+            if (password !== passwordConfirm) {
+                alert('Şifreler uyuşmuyor!');
+                return;
+            }
+            
+            // Kullanıcı adı kontrolü
+            if (users.some(u => u.username === username)) {
+                alert('Bu kullanıcı adı zaten alınmış!');
+                return;
+            }
+            
+            // E-posta kontrolü
+            if (users.some(u => u.email === email)) {
+                alert('Bu e-posta adresi zaten kayıtlı!');
+                return;
+            }
+            
+            // Yeni kullanıcı oluştur
+            const newUser = {
+                email,
+                username,
+                password,
+                refCode,
+                ownRefCode: generateRefCode(),
+                points: refCode ? 50 : 0,
+                registerDate: new Date().toLocaleDateString('tr-TR'),
+                invitedUsers: 0,
+                status: 'user'
+            };
+            
+            // Özel admin kullanıcısı
+            if (username === 'B6B6A6') {
+                newUser.status = 'admin';
+            }
+            
+            // Referans kodu kullanıldıysa bonus ver
+            if (refCode) {
+                const referrer = users.find(u => u.ownRefCode === refCode);
+                if (referrer) {
+                    referrer.points += 100;
+                    referrer.invitedUsers += 1;
+                }
+            }
+            
+            users.push(newUser);
+            localStorage.setItem('users', JSON.stringify(users));
+            
+            alert('Kayıt başarılı! Giriş yapabilirsiniz.');
+            showPage('loginPage');
+            registerForm.reset();
+        });
+
+        // Çıkış işlemi
+        logoutBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            currentUser = null;
+            clickCount = 0;
+            menuBtn.style.display = 'none';
+            clearInterval(bannerRefreshInterval);
+            showPage('loginPage');
+        });
+
+        // Puan toplama
+        clickButton.addEventListener('click', () => {
+            if (!currentUser) return;
+            
+            clickCount++;
+            
+            // Her 10 tıklamada bir video reklam göster
+            if (clickCount % 10 === 0) {
+                showVideoAd();
+            }
+            
+            const userIndex = users.findIndex(u => u.username === currentUser.username);
+            if (userIndex !== -1) {
+                users[userIndex].points = (users[userIndex].points || 0) + 1;
+                localStorage.setItem('users', JSON.stringify(users));
+                currentUser = users[userIndex];
+                pointsDisplay.textContent = currentUser.points;
+                
+                // Animasyon efekti
+                clickButton.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    clickButton.style.transform = 'scale(1)';
+                }, 100);
+            }
+        });
+
+        // Video reklamı kapat
+        closeVideoAdBtn.addEventListener('click', () => {
+            videoAdModal.style.display = 'none';
+            videoAdContainer.innerHTML = '';
+        });
+
+        // Profil bilgilerini yükle
+        function loadProfile() {
+            if (!currentUser) return;
+            
+            document.getElementById('profileUsername').textContent = currentUser.username;
+            document.getElementById('profileEmail').textContent = currentUser.email;
+            document.getElementById('profilePoints').textContent = currentUser.points || 0;
+            document.getElementById('profileRegisterDate').textContent = currentUser.registerDate;
+            document.getElementById('profileRefCode').textContent = currentUser.ownRefCode;
+            document.getElementById('profileInvites').textContent = currentUser.invitedUsers + ' kişi';
+            document.getElementById('profileAvatar').textContent = currentUser.username.charAt(0).toUpperCase();
+            
+            // Modal içindeki formu doldur
+            document.getElementById('editEmail').value = currentUser.email;
+            
+            // Referans paylaşım bilgilerini güncelle
+            refCodeToShare.value = currentUser.ownRefCode;
+            refLink.value = window.location.href.split('?')[0] + '?ref=' + currentUser.ownRefCode;
+        }
+
+        // Profil düzenleme
+        editProfileBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            editProfileModal.style.display = 'flex';
+        });
+
+        cancelEditBtn.addEventListener('click', () => {
+            editProfileModal.style.display = 'none';
+        });
+
+        editProfileForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const newEmail = document.getElementById('editEmail').value;
+            const newPassword = document.getElementById('editPassword').value;
+            
+            // Kullanıcıyı güncelle
+            const userIndex = users.findIndex(u => u.username === currentUser.username);
+            if (userIndex !== -1) {
+                users[userIndex].email = newEmail;
+                if (newPassword) {
+                    users[userIndex].password = newPassword;
+                }
+                localStorage.setItem('users', JSON.stringify(users));
+                currentUser = users[userIndex];
+                loadProfile();
+                alert('Profil bilgileri güncellendi!');
+            }
+            
+            editProfileModal.style.display = 'none';
+        });
+
+        // Referans paylaşım
+        shareRefBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            shareRefModal.style.display = 'flex';
+        });
+
+        closeShareModalBtn.addEventListener('click', () => {
+            shareRefModal.style.display = 'none';
+        });
+
+        copyRefBtn.addEventListener('click', () => {
+            refLink.select();
+            document.execCommand('copy');
+            alert('Bağlantı kopyalandı!');
+        });
+
+        // Kullanıcı listesini güncelle
+        function updateUserList() {
+            if (!adminUsers.includes(currentUser.username)) return;
+            
+            userList.innerHTML = '';
+            
+            const searchTerm = adminSearch.value.toLowerCase();
+            const filteredUsers = users.filter(user => 
+                user.username.toLowerCase().includes(searchTerm) || 
+                user.email.toLowerCase().includes(searchTerm)
+            );
+            
+            filteredUsers.forEach(user => {
+                const userItem = document.createElement('div');
+                userItem.className = 'user-item';
+                
+                const userInfo = document.createElement('div');
+                userInfo.innerHTML = `
+                    <strong>${user.username}</strong><br>
+                    <small>${user.email}</small><br>
+                    Puan: ${user.points || 0}
+                `;
+                
+                const statusBadge = document.createElement('span');
+                statusBadge.className = 'status-badge';
+                
+                if (adminUsers.includes(user.username)) {
+                    statusBadge.classList.add('status-admin');
+                    statusBadge.textContent = 'Admin';
+                } else if (user.status === 'moderator') {
+                    statusBadge.classList.add('status-moderator');
+                    statusBadge.textContent = 'Moderatör';
+                } else {
+                    statusBadge.classList.add('status-user');
+                    statusBadge.textContent = 'Kullanıcı';
+                }
+                
+                const userActions = document.createElement('div');
+                userActions.className = 'user-actions';
+                
+                if (!adminUsers.includes(user.username)) {
+                    // Moderator atama butonu
+                    const moderatorBtn = document.createElement('span');
+                    moderatorBtn.className = 'action-icon moderator';
+                    moderatorBtn.innerHTML = '👑';
+                    moderatorBtn.title = 'Moderatör Yap';
+                    moderatorBtn.addEventListener('click', () => {
+                        user.status = user.status === 'moderator' ? 'user' : 'moderator';
+                        localStorage.setItem('users', JSON.stringify(users));
+                        updateUserList();
+                    });
+                    userActions.appendChild(moderatorBtn);
+                    
+                    // Puan düzenleme butonu
+                    const editPointsBtn = document.createElement('span');
+                    editPointsBtn.className = 'action-icon add';
+                    editPointsBtn.innerHTML = '✏️';
+                    editPointsBtn.title = 'Puan Düzenle';
+                    editPointsBtn.addEventListener('click', () => {
+                        selectedUserForEdit = user;
+                        editPointsTitle.textContent = `${user.username} - Puan Düzenle`;
+                        pointsAmount.value = '';
+                        editPointsModal.style.display = 'flex';
+                    });
+                    userActions.appendChild(editPointsBtn);
+                }
+                
+                userItem.appendChild(userInfo);
+                userItem.appendChild(statusBadge);
+                userItem.appendChild(userActions);
+                userList.appendChild(userItem);
+            });
+        }
+
+        // Admin arama
+        adminSearch.addEventListener('input', updateUserList);
+
+        // Puan düzenleme
+        addPointsBtn.addEventListener('click', () => {
+            if (!selectedUserForEdit || !pointsAmount.value) return;
+            
+            const points = parseInt(pointsAmount.value);
+            if (isNaN(points)) return;
+            
+            const userIndex = users.findIndex(u => u.username === selectedUserForEdit.username);
+            if (userIndex !== -1) {
+                users[userIndex].points = (users[userIndex].points || 0) + points;
+                localStorage.setItem('users', JSON.stringify(users));
+                
+                // Eğer kendi puanımızı düzenliyorsak ekranda güncelle
+                if (currentUser.username === selectedUserForEdit.username) {
+                    currentUser = users[userIndex];
+                    pointsDisplay.textContent = currentUser.points;
+                    document.getElementById('profilePoints').textContent = currentUser.points;
+                }
+                
+                updateUserList();
+                editPointsModal.style.display = 'none';
+                alert(`${points} puan eklendi!`);
+            }
+        });
+
+        removePointsBtn.addEventListener('click', () => {
+            if (!selectedUserForEdit || !pointsAmount.value) return;
+            
+            const points = parseInt(pointsAmount.value);
+            if (isNaN(points)) return;
+            
+            const userIndex = users.findIndex(u => u.username === selectedUserForEdit.username);
+            if (userIndex !== -1) {
+                users[userIndex].points = Math.max(0, (users[userIndex].points || 0) - points);
+                localStorage.setItem('users', JSON.stringify(users));
+                
+                // Eğer kendi puanımızı düzenliyorsak ekranda güncelle
+                if (currentUser.username === selectedUserForEdit.username) {
+                    currentUser = users[userIndex];
+                    pointsDisplay.textContent = currentUser.points;
+                    document.getElementById('profilePoints').textContent = currentUser.points;
+                }
+                
+                updateUserList();
+                editPointsModal.style.display = 'none';
+                alert(`${points} puan çıkarıldı!`);
+            }
+        });
+
+        cancelPointsBtn.addEventListener('click', () => {
+            editPointsModal.style.display = 'none';
+        });
+
+        // Sayfa yüklendiğinde referans kontrolü
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const refParam = urlParams.get('ref');
+            
+            if (refParam) {
+                document.getElementById('refCode').value = refParam;
+            }
+            
+            // Menü butonunu gizle (başlangıçta)
+            menuBtn.style.display = 'none';
+            
+            // Örnek admin kullanıcıları ekle
+            if (users.length === 0) {
+                users.push({
+                    username: 'B6B6A6',
+                    email: 'admin@example.com',
+                    password: 'admin123',
+                    ownRefCode: 'B6B6A6',
+                    points: 1000,
+                    registerDate: new Date().toLocaleDateString('tr-TR'),
+                    invitedUsers: 0,
+                    status: 'admin'
+                });
+                
+                localStorage.setItem('users', JSON.stringify(users));
+            }
+            
+            // AdMob reklamlarını yükle
+            loadAds();
+        });
+    </script>
+</body>
+</html>
